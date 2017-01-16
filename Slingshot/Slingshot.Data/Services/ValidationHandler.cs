@@ -2,7 +2,9 @@
 using Slingshot.Data.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,19 +40,38 @@ namespace Slingshot.Data.Services
 
         public SendGrid.Helpers.Mail.Attachment GetAttechmentData(string filePath)
         {
-            byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
-            string base64ImageRepresentation = Convert.ToBase64String(imageArray);
-            string fileName = filePath.Substring(filePath.LastIndexOf('\\') + 1);
-            string type = filePath.Substring(filePath.LastIndexOf('.') + 1);
-
-            return new SendGrid.Helpers.Mail.Attachment
+            if(filePath.Substring(0,8).ToLower().Contains("https"))
             {
-                Filename = fileName,
-                Type = type,
-                Disposition = "inline",
-                ContentId = "kjhlknmnjhjkk",
-                Content = base64ImageRepresentation
-            };
+                string base64ImageRepresentation = ConvertImageURLToBase64(filePath);
+                string fileName = filePath.Substring(filePath.LastIndexOf('/') + 1);
+                string type = filePath.Substring(filePath.LastIndexOf('.') + 1);
+
+                return new SendGrid.Helpers.Mail.Attachment
+                {
+                    Filename = fileName,
+                    Type = type,
+                    Disposition = "inline",
+                    ContentId = "kjhlknmnjhjkk",
+                    Content = base64ImageRepresentation
+                };
+            }
+            else
+            {
+                byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
+                string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                string fileName = filePath.Substring(filePath.LastIndexOf('\\') + 1);
+                string type = filePath.Substring(filePath.LastIndexOf('.') + 1);
+
+                return new SendGrid.Helpers.Mail.Attachment
+                {
+                    Filename = fileName,
+                    Type = type,
+                    Disposition = "inline",
+                    ContentId = "kjhlknmnjhjkk",
+                    Content = base64ImageRepresentation
+                };
+            }
+            
         }
         public string GetUserType(long userId)
         {
@@ -81,6 +102,50 @@ namespace Slingshot.Data.Services
                 share = IsCraetor(userId, campaignId);
             }
             return share;
+        }
+
+
+
+        public String ConvertImageURLToBase64(String url)
+        {
+            StringBuilder _sb = new StringBuilder();
+
+            Byte[] _byte = GetImage(url);
+
+            _sb.Append(Convert.ToBase64String(_byte, 0, _byte.Length));
+
+            return _sb.ToString();
+        }
+
+        public byte[] GetImage(string url)
+        {
+            Stream stream = null;
+            byte[] buf;
+
+            try
+            {
+                WebProxy myProxy = new WebProxy();
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+
+                HttpWebResponse response = (HttpWebResponse)req.GetResponse();
+                stream = response.GetResponseStream();
+
+                using (BinaryReader br = new BinaryReader(stream))
+                {
+                    int len = (int)(response.ContentLength);
+                    buf = br.ReadBytes(len);
+                    br.Close();
+                }
+
+                stream.Close();
+                response.Close();
+            }
+            catch (Exception exp)
+            {
+                buf = null;
+            }
+
+            return (buf);
         }
     }
 }

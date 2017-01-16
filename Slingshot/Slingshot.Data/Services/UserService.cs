@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -96,7 +97,6 @@ namespace Slingshot.Data.Services
             return shared;
         }
 
-
         public History sendCampaign(long userId, long vcardId, long campId, string toEmail)
         {
             Boolean hasAccess = _validationHandler.UserCampaignValidation(userId, campId);
@@ -120,6 +120,7 @@ namespace Slingshot.Data.Services
             }
         }
 
+
         public IEnumerable<Campaign> getCampaigns(long userId, string campName)
         {
             return dbCon.getAllCampaigns(userId, campName);
@@ -127,15 +128,24 @@ namespace Slingshot.Data.Services
 
         public async Task SendEmail(string fromEmail, string toEmail, string subj, long vCardId, string HTML, Data.Models.Attachment[] emailAttechments)
         {
-            string apiKey = "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";//Environment.GetEnvironmentVariable("sendgrid_api_key", EnvironmentVariableTarget.User);
+            string apiKey = "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";//Environment.GetEnvironmentVariable("sendgrid_api_key", EnvironmentVariableTarget.User);
             dynamic sg = new SendGridAPIClient(apiKey);
 
             SendGrid.Helpers.Mail.Email from = new SendGrid.Helpers.Mail.Email(fromEmail);
             string subject = subj;
-            SendGrid.Helpers.Mail.Email to = new SendGrid.Helpers.Mail.Email(toEmail);
+            
+            string[] toEmails = toEmail.Split(',');
+            var recipientsEmailsArray = LoadMails(toEmails);
             SendGrid.Helpers.Mail.Content content = new SendGrid.Helpers.Mail.Content("text/html", HTML);
-            Mail mail = new Mail(from, subject, to, content);
+            Mail mail = new Mail(from, subject, recipientsEmailsArray[0], content);
 
+            if(toEmails.Length>0)
+            {
+                var mailList = recipientsEmailsArray.ToList();
+                var personalise = new Personalization();
+                personalise.Tos = mailList;
+                mail.Personalization = new List<Personalization>() { personalise };
+            }
             Boolean hasVCard = VCardManager.LoadVCardData(dbCon.GetVCard(vCardId));
 
             if (hasVCard)
@@ -150,8 +160,6 @@ namespace Slingshot.Data.Services
                     ContentId = "kjhlknmnjhjkk",
                     Content = attachment.Content
                 };
-
-
                 mail.AddAttachment(att);
             }
 
@@ -171,6 +179,35 @@ namespace Slingshot.Data.Services
                 mail.AddAttachment(eAtt);
             }
             dynamic response = await sg.client.mail.send.post(requestBody: mail.Get());
+        }
+
+        public SendGrid.Helpers.Mail.Email[] LoadMails(string[] toEmails)
+        {
+            var recipientEmails = new SendGrid.Helpers.Mail.Email[toEmails.Length];
+            for (int i = 0; i < recipientEmails.Length; i++)
+            {
+                recipientEmails[i]= new SendGrid.Helpers.Mail.Email(toEmails[i]);
+            }
+            return recipientEmails;
+        }
+
+        public IEnumerable<History> GetUserHistory(long userId)
+        {
+            var history = dbCon.GetUserHistory(userId);
+            return history;
+        }
+
+
+        public Event CreateEvent(long creatorId, string title, string location, DateTime startDateTime, DateTime endDateTime)
+        {
+            if(_validationHandler.UserExist(creatorId))
+            {
+                return dbCon.createEvent(creatorId, title, location, startDateTime, endDateTime);
+            }
+            else
+            {
+                return new Event { };
+            }
         }
     }
 }

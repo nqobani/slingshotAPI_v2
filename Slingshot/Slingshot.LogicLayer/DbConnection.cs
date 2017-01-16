@@ -107,6 +107,19 @@ namespace Slingshot.Data
             return attachment;
         }
 
+        public Event createEvent(long creatorId,string title, string location, DateTime startDateTime, DateTime endDateTime)
+        {
+            Event newEvent = new Event();
+            newEvent.title = title;
+            //newEvent.location = location;
+            newEvent.startDateTime = startDateTime;
+            newEvent.endDateTime = endDateTime;
+            //newEvent.CreatorId = creatorId;
+            dbCon.tblEvents.Add(newEvent);
+            dbCon.SaveChanges();
+            return newEvent;
+        }
+
         public string GetUserEmail(long userId)
         {
             User user = dbCon.tblUsers.FirstOrDefault(s => s.Id == userId);
@@ -123,12 +136,12 @@ namespace Slingshot.Data
             var email = dbCon.tblEmails.FirstOrDefault(e => e.campaignId == campId);
             return email;
         }
-        
+
 
 
         public IEnumerable<Campaign> getAllCampaigns(long userId, string campName)
         {
-            var camps = dbCon.tblCampaigns.Where(c => c.creatorId == userId||c.status.ToLower().Contains("public"));
+            var camps = dbCon.tblCampaigns.Where(c => c.creatorId == userId || c.status.ToLower().Contains("public"));
             return camps;
         }
         public IEnumerable<Attachment> GetAttachmentByEmailId(long emailId)
@@ -138,7 +151,7 @@ namespace Slingshot.Data
         }
         public IEnumerable<History> GetUserHistory(long userId)
         {
-            var history = dbCon.tblHistory.Where(h=>h.userId==userId);
+            var history = dbCon.tblHistory.Where(h => h.userId == userId);
             return history;
         }
         public IEnumerable<VCard> GetVCards(long userId)
@@ -164,5 +177,79 @@ namespace Slingshot.Data
             return history;
         }
 
+        ///UPDATE Objects in database tables///UPDATE Objects in database tables///UPDATE Objects in database tables///UPDATE Objects in database tables
+        //////UPDATE Objects in database tables///UPDATE Objects in database tables///UPDATE Objects in database tables///UPDATE Objects in database tables
+
+        public Email UpdateEmail(long emailId, string subject, string html)
+        {
+            var email = dbCon.tblEmails.FirstOrDefault(e => e.Id == emailId);
+
+            if(email!=null)
+            {
+                email.subject = subject;
+                email.html = html;
+            }
+            dbCon.SaveChanges();
+            return email;
+        }
+
+
+        ///DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA//
+        //////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA/////DELETION///RED AREA//
+
+        ///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS
+        //////DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS
+        public User DeleteUser(long userId)
+        {
+            var user = dbCon.tblUsers.FirstOrDefault(u => u.Id == userId);
+            dbCon.tblUsers.Remove(user);
+            dbCon.SaveChanges();
+            return user;
+        }
+        public VCard DeleteUserVCard(long vCardId)
+        {
+            var vCard = dbCon.tblVCards.FirstOrDefault(v => v.Id == vCardId);
+            dbCon.tblVCards.Remove(vCard);
+            dbCon.SaveChanges();
+            return vCard;
+        }
+        public IEnumerable<VCard> DeleteVcardsByUserId(long userId)
+        {
+            var vCards = dbCon.tblVCards.Where(v => v.userId == userId);
+            dbCon.tblVCards.RemoveRange(vCards);
+            dbCon.SaveChanges();
+            return vCards;
+        }
+
+        ///Delete campaign>>email>>attechment/////Delete campaign>>email>>attechment/////Delete campaign>>email>>attechment/////Delete campaign>>email>>attechment//
+        ////Delete campaign>>email>>attechment/////Delete campaign>>email>>attechment/////Delete campaign>>email>>attechment/////Delete campaign>>email>>attechment//
+        public Campaign DeleteCampaign(long campId)
+        {
+            var camp = dbCon.tblCampaigns.FirstOrDefault(c => c.Id == campId);
+            dbCon.tblCampaigns.Remove(camp);
+            dbCon.SaveChanges();
+            return camp;
+        }
+        public Email DeleteEmail(long emialId)
+        {
+            var email = dbCon.tblEmails.FirstOrDefault(e => e.Id == emialId);
+            dbCon.tblEmails.Remove(email);
+            dbCon.SaveChanges();
+            return email;
+        }
+        public Attachment DeleteAttechment(long attId)
+        {
+            var attachment = dbCon.tblAttachments.FirstOrDefault(a => a.Id == attId);
+            dbCon.tblAttachments.Remove(attachment);
+            dbCon.SaveChanges();
+            return attachment;
+        }
+        public IEnumerable<Attachment> DeleteAttectmentByEmailId(long emialId)
+        {
+            var attachment = dbCon.tblAttachments.Where(a => a.emailId == emialId);
+            dbCon.tblAttachments.RemoveRange(attachment);
+            dbCon.SaveChanges();
+            return attachment;
+        }
     }
 }

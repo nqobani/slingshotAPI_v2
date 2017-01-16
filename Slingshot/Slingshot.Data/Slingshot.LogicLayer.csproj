@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\AttachmentUserLevelModel.cs" />
+    <Compile Include="Models\ToEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\ValidationHandler.cs" />

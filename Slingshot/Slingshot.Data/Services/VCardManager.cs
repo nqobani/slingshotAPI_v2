@@ -25,6 +25,7 @@ namespace Slingshot.Data.Services
 
     public class VCardManager
     {
+        static ValidationHandler _validationHandler = new ValidationHandler();
         public static void GenearateVCard(VCard vCard)
         {
             // var t = HostingEnvironment.MapPath("~\\Services\\vCard\\vCard.vcf");
@@ -67,7 +68,18 @@ namespace Slingshot.Data.Services
         }
         public static string BuildVCard(VCard vCard)
         {
-            vCard.Image = File.ReadAllBytes(vCard.ImageLink);
+            if(vCard.ImageLink.Substring(0,7).ToLower().Contains("http"))
+            {
+                vCard.Image = _validationHandler.GetImage(vCard.ImageLink);
+            }
+            if(vCard.ImageLink.ToLower().Equals(""))
+            {
+
+            }
+            else
+            {
+                vCard.Image = File.ReadAllBytes(vCard.ImageLink);
+            }
             var vCardBuilder = new StringBuilder();
             vCardBuilder.AppendLine("BEGIN:VCARD");
             vCardBuilder.AppendLine("VERSION:2.1");
