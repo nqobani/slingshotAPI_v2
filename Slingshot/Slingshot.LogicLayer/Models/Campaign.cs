@@ -11,7 +11,7 @@ namespace Slingshot.Data.Models
     {
         [Key]
         public long Id { get; set; }
-        public long creatorId { get; set; }
+        public string creatorId { get; set; }
         public string name { get; set; }
         public string status { get; set; }
         public string thumbnail { get; set; }

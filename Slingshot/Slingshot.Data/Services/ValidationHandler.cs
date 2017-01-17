@@ -14,20 +14,20 @@ namespace Slingshot.Data.Services
     public class ValidationHandler
     {
         private ApplicationDbContext con = new ApplicationDbContext();
-        public Boolean UserExist(long userId)
+        public Boolean UserExist(string userId)
         {
-            var userC = con.tblUsers.SingleOrDefault(s => s.Id == userId);
-            Boolean userExists = false;
-            if (userC.Id == userId)
-            {
-                userExists = true;
-            }
-            return userExists;
+            //var userC = con.tblUsers.SingleOrDefault(s => s.Id == userId);
+            //Boolean userExists = false;
+            //if (userC.Id == userId)
+            //{
+            //    userExists = true;
+            //}
+            return true;
         }
 
-        public Boolean UserCampaignValidation(long useId, long campId)
+        public Boolean UserCampaignValidation(string useId, long campId)
         {
-            var uc = con.tblUserCampaigns.FirstOrDefault(s => s.userId == useId && s.campaignId == campId);
+            var uc = con.tblUserCampaigns.FirstOrDefault(s => s.userId.Equals(useId) && s.campaignId == campId);
 
             Boolean hasAccess = false;
 
@@ -73,23 +73,23 @@ namespace Slingshot.Data.Services
             }
             
         }
-        public string GetUserType(long userId)
+        public string GetUserType(string userId)
         {
-            var user = con.tblUsers.FirstOrDefault(u => u.Id == userId);
-            string userType = user.type;
-            return userType;
+            //var user = con.tblUsers.FirstOrDefault(u => u.Id == userId);
+            //string userType = user.type;
+            return "admin";
         }
-        public Boolean IsCraetor(long userId, long campaignId)
+        public Boolean IsCraetor(string userId, long campaignId)
         {
             Boolean isCreator = false;
-            var camp = con.tblCampaigns.SingleOrDefault(c => c.creatorId == userId && c.Id == campaignId);
+            var camp = con.tblCampaigns.SingleOrDefault(c => c.creatorId.Equals(userId) && c.Id == campaignId);
             if (camp.Id == campaignId && camp.creatorId == userId)
             {
                 isCreator = true;
             }
             return isCreator;
         }
-        public Boolean CanUserShare(long userId, long campaignId)
+        public Boolean CanUserShare(string userId, long campaignId)
         {
             Boolean share = false;
             string userType = GetUserType(userId);
@@ -102,6 +102,16 @@ namespace Slingshot.Data.Services
                 share = IsCraetor(userId, campaignId);
             }
             return share;
+        }
+        public Boolean AlreadyShared(string userId, long campaignId)
+        {
+            Boolean shared = false;
+            var userCamp = con.tblUserCampaigns.FirstOrDefault(uc => uc.campaignId == campaignId && uc.userId.Equals( userId));
+            if(userCamp!=null)
+            {
+                shared = true;
+            }
+            return shared;
         }
 
 
@@ -121,7 +131,6 @@ namespace Slingshot.Data.Services
         {
             Stream stream = null;
             byte[] buf;
-
             try
             {
                 WebProxy myProxy = new WebProxy();

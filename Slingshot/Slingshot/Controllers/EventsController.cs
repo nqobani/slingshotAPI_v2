@@ -14,10 +14,8 @@ namespace Slingshot.Controllers
     {
         UserService obj = new UserService();
         [Route("add")]
-        public Event createEvent(long creatorId, string title, string location, DateTime startDateTime, DateTime endDateTime)
+        public Event createEvent(string creatorId, string title, string location, DateTime startDateTime, DateTime endDateTime)
         {
-            Initilaizer init = new Initilaizer();
-            init.MigrateToLatest();
             return obj.CreateEvent( creatorId, title, location, startDateTime, endDateTime);
         }
     }

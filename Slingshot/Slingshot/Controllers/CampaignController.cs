@@ -15,24 +15,24 @@ namespace Slingshot.Controllers
     {
         UserService obj = new UserService();
         [Route("send")]
-        public History sendCampaigns(long userId, long vcardId, long campId, string toEmail)
+        public History sendCampaigns(string userId, long vcardId, long campId, string toEmail)
         {
             return obj.sendCampaign(userId, vcardId, campId, toEmail);
         }
         [Route("add")]
-        public Campaign addCampaign(int creatorId, string attechmentsJSONString, string campaignName = "No Name", string thumbnail = "HTTPS", string subject = "TESTIING", string HTML = "<!DOCTYPE html>", string status = "public")
+        public Campaign addCampaign(string creatorId, string attechmentsJSONString, string campaignName = "No Name", string thumbnail = "HTTPS", string subject = "TESTIING", string HTML = "<!DOCTYPE html>", string status = "public")
         {
             UserService obj = new UserService();
             return obj.createCampaign(creatorId, campaignName, thumbnail, subject, HTML, attechmentsJSONString, status);
         }
         [Route("get")]
-        public IEnumerable<Campaign> getCampaigns(long userId, string name = "")
+        public IEnumerable<Campaign> getCampaigns(string userId, string name = "")
         {
             UserService obj = new UserService();
             return obj.getCampaigns(userId, name);
         }
         [Route("share")]
-        public Boolean shareCampaign(long userId, long campaignId)
+        public Boolean shareCampaign(string userId, long campaignId)
         {
             return obj.ShareCampaigns(userId, campaignId);
         }

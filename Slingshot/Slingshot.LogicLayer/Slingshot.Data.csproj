@@ -67,6 +67,11 @@
   <ItemGroup>
     <Compile Include="DbConnection.cs" />
     <Compile Include="EntityFramework\ApplicationDbContext.cs" />
+    <Compile Include="Migrations\201701171409198_Initial.cs" />
+    <Compile Include="Migrations\201701171409198_Initial.Designer.cs">
+      <DependentUpon>201701171409198_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Campaign.cs" />
     <Compile Include="Models\ClientVCard.cs" />
@@ -84,7 +89,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201701171409198_Initial.resx">
+      <DependentUpon>201701171409198_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

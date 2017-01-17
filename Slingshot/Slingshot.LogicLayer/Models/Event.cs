@@ -15,6 +15,6 @@ namespace Slingshot.Data.Models
         //public string location { get; set; }
         public DateTime startDateTime { get; set; }
         public DateTime endDateTime { get; set; }
-       // public long CreatorId { get; set; }
+        //public long CreatorId { get; set; }
     }
 }

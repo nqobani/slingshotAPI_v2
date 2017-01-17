@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Slingshot.Data.Models
 {
-    public class User
+    public class User: IdentityUser
     {
-        [Key]
-        public long Id { get; set; }
-        public string email { get; set; }
-        public string password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string type { get; set; }
+
+        public virtual ISet<VCard> vCard { get; set; }
     }
 }

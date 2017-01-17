@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace Slingshot.Data.EntityFramework
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public DbSet<User> tblUsers { get; set; }
         public DbSet<VCard> tblVCards { get; set; }
 
         public DbSet<Recipient> tblRecipients { get; set; }
@@ -29,5 +28,14 @@ namespace Slingshot.Data.EntityFramework
 
         public DbSet<Event> tblEvents { get; set; }
 
+
+        public ApplicationDbContext() : base("DefaultConnection", throwIfV1Schema: false)
+        {
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

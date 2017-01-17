@@ -3,6 +3,7 @@ using Slingshot.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,21 +13,23 @@ namespace Slingshot.Data
     {
         ApplicationDbContext dbCon = new ApplicationDbContext();
 
-        public User createUser(string email, string password, string type)
+        public User createUser(string userName, string email, string password, string type)
         {
+
             User newUser = new User();
-            newUser.email = email;
-            newUser.password = password;
+            newUser.Email = email;
+            newUser.PasswordHash = password;
             newUser.type = type;
-            dbCon.tblUsers.Add(newUser);
+            newUser.UserName = userName;
+            dbCon.Users.Add(newUser);
 
             dbCon.SaveChanges();
-            long userId = newUser.Id;
+            var userId = newUser.Id;
 
-            User user = dbCon.tblUsers.SingleOrDefault(u => u.Id == userId);
+            User user = dbCon.Users.SingleOrDefault(u => u.Id == userId);
             return user;
         }
-        public VCard createVCard(long userId, string firstName, string lastName, string company, string jobTitle, string email, string webPageAddress, string twitter, string businessPhoneNumber, string mobilePhone, string country, string city, string cityCode, string imageLink)
+        public VCard createVCard(string userId, string firstName, string lastName, string company, string jobTitle, string email, string webPageAddress, string twitter, string businessPhoneNumber, string mobilePhone, string country, string city, string cityCode, string imageLink)
         {
             VCard newVCard = new VCard();
             newVCard.userId = userId;
@@ -53,7 +56,7 @@ namespace Slingshot.Data
             return vcard;
 
         }
-        public void userCampaign(long userId, long campaignId)
+        public void userCampaign(string userId, long campaignId)
         {
             UserCampaign usercampaign = new UserCampaign();
             usercampaign.campaignId = campaignId;
@@ -63,9 +66,50 @@ namespace Slingshot.Data
             dbCon.SaveChanges();
         }
 
+        public Recipient CaptureRecipientData(string userId, string fName, string lName, string email, string phone)
+        {
+            var recipient = new Recipient
+            {
+                userId = userId,
+                firstName = fName,
+                lastName = lName,
+                email = email,
+                phone = phone
+            };
+            dbCon.tblRecipients.Add(recipient);
+            dbCon.SaveChanges();
+
+            return recipient;
+        }
+        public ClientVCard createClientVCard(long clientId, string profilImage, string fName, string lName, string company, string jobTitle,string fileAs, string email, string twitter, string webPageAddress, string businessPhoneNumber, string mobileNumber, string country, string city, string code)
+        {
+            var clientVCard = new ClientVCard {
+                clientId= clientId,
+                profileImage=profilImage,
+                firstName=fName,
+                lastName=lName,
+                company=company,
+                jobTitle=jobTitle,
+                fileAs=fileAs,
+                email=email,
+                twitter=twitter,
+                webPageAddress=webPageAddress,
+                businessPhoneNumber=businessPhoneNumber,
+                mobileNUmber=mobileNumber,
+                country=country,
+                city=city,
+                code=code
+            };
+            dbCon.tblClientVCards.Add(clientVCard);
+            dbCon.SaveChanges();
+
+            return clientVCard;
+        }
 
 
-        public Campaign createCampaign(long creatorId, string name, string thumbnail, string status = "public")
+
+
+        public Campaign createCampaign(string creatorId, string name, string thumbnail, string status = "public")
         {
             Campaign newCampaign = new Campaign();
             newCampaign.creatorId = creatorId;
@@ -107,7 +151,7 @@ namespace Slingshot.Data
             return attachment;
         }
 
-        public Event createEvent(long creatorId,string title, string location, DateTime startDateTime, DateTime endDateTime)
+        public Event createEvent(string creatorId,string title, string location, DateTime startDateTime, DateTime endDateTime)
         {
             Event newEvent = new Event();
             newEvent.title = title;
@@ -120,10 +164,10 @@ namespace Slingshot.Data
             return newEvent;
         }
 
-        public string GetUserEmail(long userId)
+        public string GetUserEmail(string userId)
         {
-            User user = dbCon.tblUsers.FirstOrDefault(s => s.Id == userId);
-            string email = user.email;
+            User user = dbCon.Users.FirstOrDefault(s => s.Id == userId);
+            string email = user.Email;
             return email;
         }
         public VCard GetVCard(long vCardId)
@@ -137,11 +181,32 @@ namespace Slingshot.Data
             return email;
         }
 
-
-
-        public IEnumerable<Campaign> getAllCampaigns(long userId, string campName)
+        public IEnumerable<Recipient> GetAllUserRecipients(long userId)
         {
-            var camps = dbCon.tblCampaigns.Where(c => c.creatorId == userId || c.status.ToLower().Contains("public"));
+            var recipients = dbCon.tblRecipients.Where(r=>r.userId.Equals(userId));
+            return recipients;
+        }
+        public Recipient GetRecipient(long recipId)
+        {
+            var recipient = dbCon.tblRecipients.FirstOrDefault(r => r.Id == recipId);
+            return recipient;
+        }
+        public IEnumerable<ClientVCard> GetClientVCards(long recipId)
+        {
+            var vCards = dbCon.tblClientVCards.Where(cv => cv.clientId == recipId);
+            return vCards;
+        }
+        public ClientVCard GetClientVCard(long vCardId)
+        {
+            var vCard = dbCon.tblClientVCards.FirstOrDefault(v=>v.Id==vCardId);
+            return vCard;
+        }
+
+
+
+        public IEnumerable<Campaign> getAllCampaigns(string userId, string campName)
+        {
+            var camps = dbCon.tblCampaigns.Where(c => c.creatorId.Equals(userId) || c.status.ToLower().Contains("public"));
             return camps;
         }
         public IEnumerable<Attachment> GetAttachmentByEmailId(long emailId)
@@ -149,18 +214,18 @@ namespace Slingshot.Data
             var atts = dbCon.tblAttachments.Where(s => s.emailId == emailId);
             return atts;
         }
-        public IEnumerable<History> GetUserHistory(long userId)
+        public IEnumerable<History> GetUserHistory(string userId)
         {
-            var history = dbCon.tblHistory.Where(h => h.userId == userId);
+            var history = dbCon.tblHistory.Where(h => h.userId.Equals(userId));
             return history;
         }
-        public IEnumerable<VCard> GetVCards(long userId)
+        public IEnumerable<VCard> GetVCards(string userId)
         {
-            var vCards = dbCon.tblVCards.Where(u => u.userId == userId);
+            var vCards = dbCon.tblVCards.Where(u => u.userId.Equals( userId));
             return vCards;
         }
 
-        public History createHistory(long userId, long campaignId, string toEMail, long imageId = 0)
+        public History createHistory(string userId, long campaignId, string toEMail, long imageId = 0)
         {
             History newHistory = new History();
             newHistory.userId = userId;
@@ -199,10 +264,10 @@ namespace Slingshot.Data
 
         ///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS
         //////DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS///DELETE USERS and VCARDS
-        public User DeleteUser(long userId)
+        public User DeleteUser(string userId)
         {
-            var user = dbCon.tblUsers.FirstOrDefault(u => u.Id == userId);
-            dbCon.tblUsers.Remove(user);
+            var user = dbCon.Users.FirstOrDefault(u => u.Id == userId);
+            dbCon.Users.Remove(user);
             dbCon.SaveChanges();
             return user;
         }
@@ -215,7 +280,7 @@ namespace Slingshot.Data
         }
         public IEnumerable<VCard> DeleteVcardsByUserId(long userId)
         {
-            var vCards = dbCon.tblVCards.Where(v => v.userId == userId);
+            var vCards = dbCon.tblVCards.Where(v => v.userId.Equals(userId));
             dbCon.tblVCards.RemoveRange(vCards);
             dbCon.SaveChanges();
             return vCards;

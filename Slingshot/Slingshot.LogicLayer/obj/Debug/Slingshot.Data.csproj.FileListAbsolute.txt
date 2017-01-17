@@ -16,3 +16,5 @@ C:\Users\User\documents\visual studio 2015\Projects\Slingshot\Slingshot.LogicLay
 C:\Users\User\documents\visual studio 2015\Projects\Slingshot\Slingshot.LogicLayer\bin\Debug\Microsoft.AspNet.Identity.EntityFramework.xml
 C:\Users\User\documents\visual studio 2015\Projects\Slingshot\Slingshot.LogicLayer\bin\Debug\Newtonsoft.Json.xml
 C:\Users\User\documents\visual studio 2015\Projects\Slingshot\Slingshot.LogicLayer\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\User\documents\visual studio 2015\Projects\Slingshot\Slingshot.LogicLayer\obj\Debug\Slingshot.LogicLayer.Migrations.Initial.resources
+C:\Users\User\documents\visual studio 2015\Projects\Slingshot\Slingshot.LogicLayer\obj\Debug\Slingshot.Data.csproj.GenerateResource.Cache

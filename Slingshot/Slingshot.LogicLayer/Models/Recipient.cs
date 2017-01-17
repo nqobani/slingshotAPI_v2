@@ -11,6 +11,7 @@ namespace Slingshot.Data.Models
     {
         [Key]
         public long Id { get; set; }
+        public string userId { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
         public string email { get; set; }

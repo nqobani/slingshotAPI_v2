@@ -14,7 +14,7 @@ namespace Slingshot.Controllers
     {
         UserService obj = new UserService();
         [Route("getuserhistory")]
-        public IEnumerable<History> GetUserHistory(long userId)
+        public IEnumerable<History> GetUserHistory(string userId)
         {
             return obj.GetUserHistory(userId);
         }
