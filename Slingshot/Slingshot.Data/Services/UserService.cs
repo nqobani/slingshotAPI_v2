@@ -16,14 +16,20 @@ namespace Slingshot.Data.Services
         DbConnection dbCon = new DbConnection();
         ValidationHandler _validationHandler = new ValidationHandler();
 
-        public User createUser(string userName, string email, string password, string type)
+        public User createUser(string userName,string firstName,string lastName, string email, string password, string type)
         {
-            return dbCon.createUser( userName, email, password, type);
+            return dbCon.createUser( userName, firstName, lastName, email, password, type);
+        }
+        public UserModel[] GetAllUsers(string userName)
+        {
+            var user = dbCon.GetAllUsers(userName);
+
+            return user;
         }
         public IEnumerable<Slingshot.Data.Models.VCard> GetUserVCards(string userID)
         {
             Slingshot.Data.Models.VCard[] _vCard = new Slingshot.Data.Models.VCard[1];
-            if (_validationHandler.UserExist(userID))
+            if (dbCon.UserExists(userID))
             {
                 return dbCon.GetVCards(userID);
             }
@@ -37,7 +43,7 @@ namespace Slingshot.Data.Services
 
         public Slingshot.Data.Models.VCard CreateVCard(string userId, string firstName, string lastName, string company, string jobTitle, string email, string webPageAddress, string twitter, string businessPhoneNumber, string mobilePhone, string country, string city, string cityCode, string imageLink)
         {
-            Boolean userExists = _validationHandler.UserExist(userId);
+            Boolean userExists = dbCon.UserExists(userId);
             if (userExists)
             {
                 return dbCon.createVCard(userId, firstName, lastName, company, jobTitle, email, webPageAddress, twitter, businessPhoneNumber, mobilePhone, country, city, cityCode, imageLink);
@@ -47,9 +53,9 @@ namespace Slingshot.Data.Services
                 return new Slingshot.Data.Models.VCard { };
             }
         }
-        public Campaign createCampaign(string creatorId, string campaignName, string thumbnail, string subject, string HTML, string attechmentsJSONString, string status = "public")
+        public Campaign createCampaign(string creatorId, string campaignName, Boolean prefared,string thumbnail, string subject, string HTML, string attechmentsJSONString, string status = "public")
         {
-            var campaign = dbCon.createCampaign(creatorId, campaignName, thumbnail, subject);
+            var campaign = dbCon.createCampaign(creatorId, campaignName, prefared, thumbnail, subject);
 
             long campID = campaign.Id;
 
@@ -64,7 +70,13 @@ namespace Slingshot.Data.Services
             }
             catch (Exception)
             {
-                attechmentObjs = null;
+                attechmentObjs = new AttachmentUserLevelModel []{
+                    new AttachmentUserLevelModel {
+                        name="logo.PNG",
+                        filePath="C:\\Users\\User\\Music\\Captusdese.PNG"
+                    }
+
+                };
             }
 
             for (int i = 0; i < attechmentObjs.Length; i++)
@@ -81,7 +93,7 @@ namespace Slingshot.Data.Services
         public Boolean ShareCampaigns(string userId, long campId)
         {
             Boolean shared = false;
-            if (_validationHandler.UserExist(userId))
+            if (dbCon.UserExists(userId))
             {
                 if (_validationHandler.CanUserShare(userId, campId))
                 {
@@ -100,7 +112,7 @@ namespace Slingshot.Data.Services
         {
             string[] campIds = campId.Split(',');
             UserCampaign[] userCamp = new UserCampaign[campIds.Length];
-            if (_validationHandler.UserExist(userId))
+            if (dbCon.UserExists(userId))
             {
                 for (int i = 0; i < campIds.Length; i++)
                 {
@@ -218,7 +230,7 @@ namespace Slingshot.Data.Services
 
         public Event CreateEvent(string creatorId, string title, string location, DateTime startDateTime, DateTime endDateTime)
         {
-            if (_validationHandler.UserExist(creatorId))
+            if (dbCon.UserExists(creatorId))
             {
                 return dbCon.createEvent(creatorId, title, location, startDateTime, endDateTime);
             }
@@ -230,11 +242,11 @@ namespace Slingshot.Data.Services
 
 
 
-        public Recipient CaptureRecipient(string userId, string fName, string lName, string email, string phone)
+        public Recipient CaptureRecipient(string userId, string fName, string lName, string email, string phone, string jobTile, string country, string province, string city, string street, string code)
         {
-            if (_validationHandler.UserExist(userId))
+            if (dbCon.UserExists(userId))
             {
-                var recipient = dbCon.CaptureRecipientData(userId, fName, lName, email, phone);
+                var recipient = dbCon.CaptureRecipientData(userId, fName, lName, email, phone,  jobTile,  country,  province,  city,  street,  code);
                 return recipient;
             }
             else
@@ -243,11 +255,7 @@ namespace Slingshot.Data.Services
             }
 
         }
-        public ClientVCard CreateClientVCard(long clientId, string profilImage, string fName, string lName, string company, string jobTitle, string fileAs, string email, string twitter, string webPageAddress, string businessPhoneNumber, string mobileNumber, string country, string city, string code)
-        {
-            var vCard = dbCon.createClientVCard(clientId, profilImage, fName, lName, company, jobTitle, fileAs, email, twitter, webPageAddress, businessPhoneNumber, mobileNumber, country, city, code);
-            return vCard;
-        }
+
 
         public IEnumerable<Recipient> GetAllUserRecipients(long userId)
         {
@@ -259,15 +267,6 @@ namespace Slingshot.Data.Services
             var recipient = dbCon.GetRecipient(recipientId);
             return recipient;
         }
-        public IEnumerable<ClientVCard> GetClientVCards(long clientId)
-        {
-            var vCards = dbCon.GetClientVCards(clientId);
-            return vCards;
-        }
-        public ClientVCard GetClientVCard(long vCardId)
-        {
-            var vCard = dbCon.GetClientVCard(vCardId);
-            return vCard;
-        }
+
     }
 }

@@ -14,15 +14,11 @@ namespace Slingshot.Controllers
     {
         UserService obj = new UserService();
         [Route("addclient")]
-        public Recipient AddClient(string userId, string fName, string lName, string email, string phone)
+        public Recipient AddClient(string userId, string fName, string lName, string email, string cell, string jobTile, string country, string province, string city, string street, string code)
         {
-            return obj.CaptureRecipient(userId, fName, lName, email, phone);
+            return obj.CaptureRecipient(userId, fName, lName, email, cell,  jobTile,  country,  province,  city,  street,  code);
         }
-        [Route("addVCard")]
-        public ClientVCard CreateClientVCard(long clientId, string profilImage, string fName, string lName, string company, string jobTitle, string fileAs, string email, string twitter, string webPageAddress, string businessPhoneNumber, string mobileNumber, string country, string city, string code)
-        {
-            return obj.CreateClientVCard( clientId,  profilImage,  fName,  lName,  company,  jobTitle,  fileAs,  email,  twitter,  webPageAddress,  businessPhoneNumber,  mobileNumber,  country,  city,  code);
-        }
+        
         [Route("getUserClients")]
         public IEnumerable<Recipient> GetAllUserClients(long userId)
         {
@@ -33,15 +29,6 @@ namespace Slingshot.Controllers
         {
             return obj.GetRecipient(userId);
         }
-        [Route("getVCards")]
-        public IEnumerable<ClientVCard> GetClientVCards(long clientId)
-        {
-            return obj.GetClientVCards(clientId);
-        }
-        [Route("getVCard")]
-        public ClientVCard GetClientVCard(long vCardId)
-        {
-            return obj.GetClientVCard(vCardId);
-        }
+
     }
 }

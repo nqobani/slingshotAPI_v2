@@ -14,9 +14,14 @@ namespace Slingshot.Controllers
     {
         UserService obj = new UserService();
         [Route("registerUser")]
-        public User register(string userName,string email, string password, string type = "member")
+        public User register(string userName, string firstName, string lastName, string email, string password, string type = "member")
         {
-            return obj.createUser( userName, email, password, type);
+            return obj.createUser( userName, firstName, lastName, email, password, type);
+        }
+        [Route("get")]
+        public UserModel[] GetAllUsers(string userName="")
+        {
+            return obj.GetAllUsers(userName);
         }
         [Route("createVCard")]
         public Data.Models.VCard createVCard(string userId, string firstName, string lastName, string company, string jobTitle, string email, string webPageAddress, string twitter, string businessPhoneNumber, string mobilePhone, string country, string city, string cityCode, string imageLink)

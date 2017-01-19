@@ -14,6 +14,7 @@ namespace Slingshot.Data.Models
         public string creatorId { get; set; }
         public string name { get; set; }
         public string status { get; set; }
+        public Boolean prefared { get; set; }
         public string thumbnail { get; set; }
         public ISet<Email> email { get; set; }
     }

@@ -71,10 +71,13 @@
     <Compile Include="Migrations\201701171409198_Initial.Designer.cs">
       <DependentUpon>201701171409198_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701190802563_updatedCampaignAndRecipientModels.cs" />
+    <Compile Include="Migrations\201701190802563_updatedCampaignAndRecipientModels.Designer.cs">
+      <DependentUpon>201701190802563_updatedCampaignAndRecipientModels.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Campaign.cs" />
-    <Compile Include="Models\ClientVCard.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\History.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="Models\Recipient.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserCampaign.cs" />
+    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\VCard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -92,6 +96,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201701171409198_Initial.resx">
       <DependentUpon>201701171409198_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701190802563_updatedCampaignAndRecipientModels.resx">
+      <DependentUpon>201701190802563_updatedCampaignAndRecipientModels.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

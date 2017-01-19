@@ -17,13 +17,14 @@ namespace Slingshot.Data.Models
         public string lastName { get; set; }
         public string company { get; set; }
         public string jobTitle { get; set; }
-        public string fileAs { get; set; }
         public string email { get; set; }
         public string twitter { get; set; }
         public string webPageAddress { get; set; }
         public string businessPhoneNumber { get; set; }
         public string mobileNumber { get; set; }
         public string country { get; set; }
+        public string province { get; set; }
+        public string street { get; set; }
         public string city { get; set; }
         public string code { get; set; }
     }

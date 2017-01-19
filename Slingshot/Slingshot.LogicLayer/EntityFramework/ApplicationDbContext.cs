@@ -14,7 +14,6 @@ namespace Slingshot.Data.EntityFramework
         public DbSet<VCard> tblVCards { get; set; }
 
         public DbSet<Recipient> tblRecipients { get; set; }
-        public DbSet<ClientVCard> tblClientVCards { get; set; }
 
         public DbSet<Campaign> tblCampaigns { get; set; }
         public DbSet<Email> tblEmails { get; set; }

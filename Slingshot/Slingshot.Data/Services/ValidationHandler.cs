@@ -14,16 +14,7 @@ namespace Slingshot.Data.Services
     public class ValidationHandler
     {
         private ApplicationDbContext con = new ApplicationDbContext();
-        public Boolean UserExist(string userId)
-        {
-            //var userC = con.tblUsers.SingleOrDefault(s => s.Id == userId);
-            //Boolean userExists = false;
-            //if (userC.Id == userId)
-            //{
-            //    userExists = true;
-            //}
-            return true;
-        }
+        private DbConnection dbCon = new DbConnection();
 
         public Boolean UserCampaignValidation(string useId, long campId)
         {
@@ -73,12 +64,7 @@ namespace Slingshot.Data.Services
             }
             
         }
-        public string GetUserType(string userId)
-        {
-            //var user = con.tblUsers.FirstOrDefault(u => u.Id == userId);
-            //string userType = user.type;
-            return "admin";
-        }
+        
         public Boolean IsCraetor(string userId, long campaignId)
         {
             Boolean isCreator = false;
@@ -92,7 +78,7 @@ namespace Slingshot.Data.Services
         public Boolean CanUserShare(string userId, long campaignId)
         {
             Boolean share = false;
-            string userType = GetUserType(userId);
+            string userType =  (userId);
             if (userType.ToLower().Equals("admin"))
             {
                 share = true;

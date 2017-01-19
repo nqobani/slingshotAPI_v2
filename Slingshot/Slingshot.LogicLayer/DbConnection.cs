@@ -13,7 +13,7 @@ namespace Slingshot.Data
     {
         ApplicationDbContext dbCon = new ApplicationDbContext();
 
-        public User createUser(string userName, string email, string password, string type)
+        public User createUser(string userName, string firstName, string lastName, string email, string password, string type)
         {
 
             User newUser = new User();
@@ -21,6 +21,8 @@ namespace Slingshot.Data
             newUser.PasswordHash = password;
             newUser.type = type;
             newUser.UserName = userName;
+            newUser.FirstName = firstName;
+            newUser.LastName = lastName;
             dbCon.Users.Add(newUser);
 
             dbCon.SaveChanges();
@@ -66,7 +68,39 @@ namespace Slingshot.Data
             dbCon.SaveChanges();
         }
 
-        public Recipient CaptureRecipientData(string userId, string fName, string lName, string email, string phone)
+        public Boolean UserExists(string userId)
+        {
+            Boolean userExists = false;
+            var user = dbCon.Users.FirstOrDefault(u=> u.Id.Equals(userId));
+            if(user!=null)
+            {
+                userExists = true;
+            }
+            return userExists;
+        }
+        public string GetUserType(string userId)
+        {
+            var user = dbCon.Users.FirstOrDefault(u => u.Id.Equals(userId));
+            string userType = user.type;
+            return userType;
+        }
+        public UserModel[] GetAllUsers(string userName)
+        {
+            var user = dbCon.Users.Where(u=> u.UserName.Contains(userName)).ToList();
+            UserModel[] users = new UserModel[user.Count()];
+            for (int i = 0; i < users.Length; i++)
+            {
+                users[i] = new UserModel {
+                    email=user[i].Email,
+                    firstName= user[i].FirstName,
+                    lastName= user[i].LastName,
+                    phoneNumber= user[i].PhoneNumber
+                };
+            }
+            return users;
+        }
+
+        public Recipient CaptureRecipientData(string userId, string fName, string lName, string email, string cell, string jobTile, string country, string province, string city, string street, string code)
         {
             var recipient = new Recipient
             {
@@ -74,48 +108,32 @@ namespace Slingshot.Data
                 firstName = fName,
                 lastName = lName,
                 email = email,
-                phone = phone
+                cell = cell,
+                jobTitle=jobTile,
+                country=country,
+                province=province,
+                city=city,
+                street=street,
+                code=code
             };
             dbCon.tblRecipients.Add(recipient);
             dbCon.SaveChanges();
 
             return recipient;
         }
-        public ClientVCard createClientVCard(long clientId, string profilImage, string fName, string lName, string company, string jobTitle,string fileAs, string email, string twitter, string webPageAddress, string businessPhoneNumber, string mobileNumber, string country, string city, string code)
-        {
-            var clientVCard = new ClientVCard {
-                clientId= clientId,
-                profileImage=profilImage,
-                firstName=fName,
-                lastName=lName,
-                company=company,
-                jobTitle=jobTitle,
-                fileAs=fileAs,
-                email=email,
-                twitter=twitter,
-                webPageAddress=webPageAddress,
-                businessPhoneNumber=businessPhoneNumber,
-                mobileNUmber=mobileNumber,
-                country=country,
-                city=city,
-                code=code
-            };
-            dbCon.tblClientVCards.Add(clientVCard);
-            dbCon.SaveChanges();
-
-            return clientVCard;
-        }
 
 
 
 
-        public Campaign createCampaign(string creatorId, string name, string thumbnail, string status = "public")
+
+        public Campaign createCampaign(string creatorId, string name,Boolean prefared, string thumbnail,  string status = "public")
         {
             Campaign newCampaign = new Campaign();
             newCampaign.creatorId = creatorId;
             newCampaign.name = name;
             newCampaign.thumbnail = thumbnail;
             newCampaign.status = status;
+            newCampaign.prefared = prefared;
             dbCon.tblCampaigns.Add(newCampaign);
             dbCon.SaveChanges();
 
@@ -191,17 +209,6 @@ namespace Slingshot.Data
             var recipient = dbCon.tblRecipients.FirstOrDefault(r => r.Id == recipId);
             return recipient;
         }
-        public IEnumerable<ClientVCard> GetClientVCards(long recipId)
-        {
-            var vCards = dbCon.tblClientVCards.Where(cv => cv.clientId == recipId);
-            return vCards;
-        }
-        public ClientVCard GetClientVCard(long vCardId)
-        {
-            var vCard = dbCon.tblClientVCards.FirstOrDefault(v=>v.Id==vCardId);
-            return vCard;
-        }
-
 
 
         public IEnumerable<Campaign> getAllCampaigns(string userId, string campName)
